@@ -1,0 +1,72 @@
+version: '2'
+
+services:
+  nginx:
+    image: nginx
+    volumes:
+      - /tmp/docker/elk/log/nginx:/var/log/nginx
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    networks:
+      - elk
+
+  filebeat:
+    image: olinicola/filebeat
+    volumes:
+      - /tmp/docker/elk/log/nginx:/etc/logs/nginx # логи nginx
+      - ./filebeat/filebeat.yml:/filebeat.yml:ro
+      - ./filebeat/certs:/etc/pki/tls/certs
+      - ./filebeat/certs:/etc/pki/tls/private
+    networks:
+      - elk
+
+  elasticsearch:
+    build:
+      context: elasticsearch/
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+#      - /path/to/storage:/usr/share/elasticsearch/data #Uncomment and set path to have persistent storage
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - elk
+
+  logstash:
+    build:
+      context: logstash/
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/conf.d:/usr/share/logstash/pipeline
+      - ./logstash/patterns:/usr/share/logstash/patterns
+      - ./logstash/certs/logstash-beats.crt:/etc/pki/tls/certs/logstash-beats.crt:ro
+      - ./logstash/certs/logstash-beats.key:/etc/pki/tls/private/logstash-beats.key:ro
+    ports:
+      - "5044:5044"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    build:
+      context: kibana/
+    volumes:
+      - ./kibana/config/:/usr/share/kibana/config:ro
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+networks:
+
+  elk:
+    driver: bridge

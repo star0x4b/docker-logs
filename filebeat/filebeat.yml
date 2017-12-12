@@ -1,0 +1,18 @@
+filebeat.prospectors:
+        -
+            paths:
+                - "/etc/logs/nginx/nginx_access.log"
+            document_type: nginx-access
+#        -
+#            paths:
+#                - "/etc/logs/nginx/nginx_error.log"
+#            document_type: nginx-error
+output:
+    logstash:
+        hosts: ["logstash:5044"]
+        ssl:
+          certificate_authorities:
+            - /etc/pki/tls/certs/logstash-beats.crt
+        timeout: 15
+    file:
+        path: "/tmp/filebeat"
