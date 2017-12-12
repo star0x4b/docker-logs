@@ -9,8 +9,9 @@ nginx->filebeat->logstash->elasticsearch
 
 ## Usage:
 ```
-$ docker-compose up --build 	# --build is only needed for the first run\
-$ curl http://{$HOST}		# curl nginx host ($HOST) to generate some logs\
+mkdir /tmp/docker/elk/log/nginx
+$ docker-compose up --build 	# --build is only needed for the first run
+$ curl http://{$HOST}		# curl nginx host ($HOST) to generate some logs
 ```
 Go to _http://{$HOST}:5601_ to see logs. At the first run you have to choose what index pattern you want to use. Set this pattern to "filebeat-*".
 
