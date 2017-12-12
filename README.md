@@ -9,7 +9,7 @@ nginx->filebeat->logstash->elasticsearch
 
 ## Usage:
 ```
-mkdir /tmp/docker/elk/log/nginx
+$ mkdir /tmp/docker/elk/log/nginx
 $ docker-compose up --build 	# --build is only needed for the first run
 $ curl http://{$HOST}		# curl nginx host ($HOST) to generate some logs
 ```
