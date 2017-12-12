@@ -13,7 +13,7 @@ services:
       - elk
 
   filebeat:
-    image: olinicola/filebeat
+    image: prima/filebeat
     volumes:
       - /tmp/docker/elk/log/nginx:/etc/logs/nginx # логи nginx
       - ./filebeat/filebeat.yml:/filebeat.yml:ro
